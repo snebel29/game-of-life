@@ -1,85 +1,116 @@
 
-import curses
 import numpy
+import curses
+import drawille
 
 from copy import deepcopy
 
-width = 5
-height = 5
+class GameOfLife(object):
 
-board = numpy.asarray([[0]*width for i in range(height)])
+    def __init__(self, **kwargs):
+        self.height = kwargs['height']
+        self.width = kwargs['width']
+        self.board = numpy.asarray([[0]*self.width for i in range(self.height)])
 
-def print_board(board):
-    for row in board:
-        print(row)
+    def neighbours_coordinates(self, coordinates):
+        neighbours = []
+        neighbours.append((coordinates[0]-1, coordinates[1]-1))
+        neighbours.append((coordinates[0]-1, coordinates[1]))
+        neighbours.append((coordinates[0]-1, coordinates[1]+1))
+        neighbours.append((coordinates[0], coordinates[1]-1))
+        neighbours.append((coordinates[0], coordinates[1]+1))
+        neighbours.append((coordinates[0]+1, coordinates[1]-1))
+        neighbours.append((coordinates[0]+1, coordinates[1]))
+        neighbours.append((coordinates[0]+1, coordinates[1]+1))
 
-    print('-'*25)
+        return neighbours
 
-def neighbours_coordinates(c):
-    neighbours = []
-    neighbours.append((c[0]-1, c[1]-1))
-    neighbours.append((c[0]-1, c[1]))
-    neighbours.append((c[0]-1, c[1]+1))
-    neighbours.append((c[0], c[1]-1))
-    neighbours.append((c[0], c[1]+1))
-    neighbours.append((c[0]+1, c[1]-1))
-    neighbours.append((c[0]+1, c[1]))
-    neighbours.append((c[0]+1, c[1]+1))
+    def is_alive(self, coordinates):
+        return int(coordinates)
 
-    return neighbours
+    def valid_coordinates(self, coordinates):
+        if coordinates[0] >= self.height or coordinates[1] >= self.width:
+            return False
 
-def is_alive(coordinates):
-    return int(coordinates)
+        return True
 
-def valid_coordinates(coordinates):
-    if coordinates[0] >= height or coordinates[1] >= width:
-        return False
+    def live_neighbours(self, coordinates):
+        neighbours = 0
+        for c in self.neighbours_coordinates(coordinates):
+            if self.valid_coordinates(c):
+                if self.is_alive(self.board[c]):
+                    neighbours += 1
 
-    return True
+        return neighbours
 
-def live_neighbours(board, coordinates):
-    neighbours = 0
-    for c in neighbours_coordinates(coordinates):
-        if valid_coordinates(c):
-            if is_alive(board[c]):
-                neighbours += 1
+    def alive_cells(self):
+        result = []
+        for i, row in enumerate(self.board):
+            for j, column in enumerate(row):
+                if self.board[i][j] == 1: result.append((i, j))
 
-    return neighbours
+        return result
 
-def alive_cells(board):
-    result = []
-    for i, row in enumerate(board):
-        for j, column in enumerate(row):
-            if board[i][j] == 1: result.append((i, j))
+    def evolve_board(self):
+        buffer_board = deepcopy(self.board)
+        for i, row in enumerate(self.board):
+            for j, column in enumerate(row):
+                l_n = self.live_neighbours((i, j))
+                if self.is_alive(self.board[(i, j)]):
+                    if l_n > 3 or l_n < 2:
+                        buffer_board[(i, j)] = 0
+                else:
+                    if l_n == 3:
+                        buffer_board[(i, j)] = 1
 
-    return result
+        self.board = buffer_board
 
-def evolve_board(board):
-    buffer_board = deepcopy(board)
-    for i, row in enumerate(board):
-        for j, column in enumerate(row):
-            l_n = live_neighbours(board, (i, j))
-            if is_alive(board[(i, j)]):
-                if l_n > 3 or l_n < 2:
-                    buffer_board[(i, j)] = 0
-            else:
-                if l_n == 3:
-                    buffer_board[(i, j)] = 1
+def main_curses(stdscr, game):
 
-    return buffer_board
+    def print_board(window, board):
+        for row in range(len(board)):
+            window.addstr(row, 0, ' '.join(str(board[row])))
+
+    stdscr.clear()
+
+    while True:
+      print_board(stdscr, game.board)
+      stdscr.refresh()
+      stdscr.getch()
+      game.evolve_board()
 
 
 if __name__ == '__main__':
-    board[1][2] = 1
-    board[2][2] = 1
-    board[3][2] = 1
+    game = GameOfLife(height=5, width=5)
 
-    print_board(board)
-    board = evolve_board(board)
-    print_board(board)
-    board = evolve_board(board)
-    print_board(board)
-    board = evolve_board(board)
-    print_board(board)
-    board = evolve_board(board)
-    print_board(board)
+    game.board[1][2] = 1
+    game.board[2][2] = 1
+    game.board[3][2] = 1
+
+    #curses.wrapper(main_curses, game)
+    
+    def create_canvas(game):
+        s = drawille.Canvas()
+        for y in range(game.height):
+            for x in range(game.width):
+                if game.board[x][y] == 1: s.set(x, y)
+
+        return s
+
+    def frame_coordinates(game):
+        while True:
+            game.evolve_board()
+            s = []
+            for y in range(game.height):
+                for x in range(game.width):
+                    if game.board[x][y] == 1: s.append((x, y))
+
+            yield s
+        
+    #print(create_canvas(game).frame(-40, -40, 40, 40))
+    #game.evolve_board()
+    #print(create_canvas(game).frame(-40, -40, 40, 40))
+    
+    s = drawille.Canvas()
+    drawille.animate(s, frame_coordinates, 1./5, game)
+
