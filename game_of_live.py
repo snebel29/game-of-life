@@ -3,6 +3,7 @@ import numpy
 import curses
 import drawille
 
+from random import randrange
 from copy import deepcopy
 
 class GameOfLife(object):
@@ -74,18 +75,25 @@ def main_curses(stdscr, game):
     stdscr.clear()
 
     while True:
-      print_board(stdscr, game.board)
-      stdscr.refresh()
-      stdscr.getch()
-      game.evolve_board()
+        print_board(stdscr, game.board)
+        stdscr.refresh()
+        stdscr.getch()
+        game.evolve_board()
 
 
 if __name__ == '__main__':
-    game = GameOfLife(height=5, width=5)
+    game = GameOfLife(height=60, width=60)
 
-    game.board[1][2] = 1
-    game.board[2][2] = 1
-    game.board[3][2] = 1
+    def fill_board_randomly(game):
+        for y in range(game.height):
+            for x in range(game.width):
+                game.board[x][y] = randrange(2)
+
+    fill_board_randomly(game)             
+
+    #game.board[1][2] = 1
+    #game.board[2][2] = 1
+    #game.board[3][2] = 1
 
     #curses.wrapper(main_curses, game)
     
