@@ -89,6 +89,15 @@ if __name__ == '__main__':
             for x in range(game.width):
                 game.board[x][y] = randrange(2)
 
+    def fill_board_borders(game):
+        for column in range(len(game.board)):
+            game.board[0][column] = 1
+            game.board[len(game.board)-1][column] = 1
+
+        for row in game.board:
+            game.board[row][0] = 1
+            game.board[row][len(row)-1] = 1
+        
     fill_board_randomly(game)             
 
     #game.board[1][2] = 1
@@ -108,6 +117,7 @@ if __name__ == '__main__':
     def frame_coordinates(game):
         while True:
             game.evolve_board()
+            fill_board_borders(game)
             s = []
             for y in range(game.height):
                 for x in range(game.width):
