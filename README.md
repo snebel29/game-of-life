@@ -1,5 +1,7 @@
 ## Conway's Game of Life
 
+Using braille characters to present the "board" trough https://github.com/asciimoo/drawille/
+
 The rules for Conway's Game of Life are pretty simple:
 
 - Any live cell with fewer than two live neighbours dies, as if caused by under-population.
