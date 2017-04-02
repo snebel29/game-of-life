@@ -71,9 +71,13 @@ def main():
     game = GameOfLife(width=(int(width*2.0)-2), height=(int(height*4.0))-4)
     
     def fill_board_randomly(game):
+        def set_cell_randomly():
+            if randrange(10) > randrange(6, 10): return 1
+            return 0
+
         for y in range(game.height):
             for x in range(game.width):
-                game.board[y][x] = randrange(2)
+                game.board[y][x] = set_cell_randomly()
         
     fill_board_randomly(game)             
     
