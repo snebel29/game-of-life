@@ -1,4 +1,5 @@
 
+import sys
 import numpy
 import curses
 import drawille
