@@ -66,69 +66,33 @@ class GameOfLife(object):
 
         self.board = buffer_board
 
-def main_curses(stdscr, game):
-
-    def print_board(window, board):
-        for row in range(len(board)):
-            window.addstr(row, 0, ' '.join(str(board[row])))
-
-    stdscr.clear()
-
-    while True:
-        print_board(stdscr, game.board)
-        stdscr.refresh()
-        stdscr.getch()
-        game.evolve_board()
-
-
-if __name__ == '__main__':
-    game = GameOfLife(height=60, width=60)
-
+def main():
+    width, height = drawille.getTerminalSize()
+    game = GameOfLife(width=(int(width*2.0)-2), height=(int(height*4.0))-4)
+    
     def fill_board_randomly(game):
         for y in range(game.height):
             for x in range(game.width):
-                game.board[x][y] = randrange(2)
-
-    def fill_board_borders(game):
-        for column in range(len(game.board)):
-            game.board[0][column] = 1
-            game.board[len(game.board)-1][column] = 1
-
-        for row in game.board:
-            game.board[row][0] = 1
-            game.board[row][len(row)-1] = 1
+                game.board[y][x] = randrange(2)
         
     fill_board_randomly(game)             
-
-    #game.board[1][2] = 1
-    #game.board[2][2] = 1
-    #game.board[3][2] = 1
-
-    #curses.wrapper(main_curses, game)
     
-    def create_canvas(game):
-        s = drawille.Canvas()
-        for y in range(game.height):
-            for x in range(game.width):
-                if game.board[x][y] == 1: s.set(x, y)
-
-        return s
-
     def frame_coordinates(game):
         while True:
             game.evolve_board()
-            fill_board_borders(game)
             s = []
             for y in range(game.height):
                 for x in range(game.width):
-                    if game.board[x][y] == 1: s.append((x, y))
+                    if game.board[y][x] == 1: s.append((x, y))
 
             yield s
-        
-    #print(create_canvas(game).frame(-40, -40, 40, 40))
-    #game.evolve_board()
-    #print(create_canvas(game).frame(-40, -40, 40, 40))
-    
+     
     s = drawille.Canvas()
     drawille.animate(s, frame_coordinates, 1./5, game)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
 
