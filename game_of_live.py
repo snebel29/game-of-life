@@ -1,7 +1,6 @@
 
 import sys
 import numpy
-import curses
 import drawille
 
 from random import randrange
