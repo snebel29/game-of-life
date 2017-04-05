@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import numpy
-
 from copy import deepcopy
 
 class GameOfLife(object):
 
     def __init__(self, **kwargs):
+        """numpy array will allow us to use tuples as coordinates"""
         self.height = kwargs['height']
         self.width = kwargs['width']
         self.board = numpy.asarray([[0]*self.width for i in range(self.height)])

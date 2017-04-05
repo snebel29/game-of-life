@@ -7,8 +7,10 @@ from game_of_life import GameOfLife
 from random import randrange
 
 def main():
+    """Since 1 braille chars can represent 2*4 points we have to scale the board accordingly"""
     width, height = drawille.getTerminalSize()
-    game = GameOfLife(width=(int(width*2.0)-2), height=(int(height*4.0))-4)
+    width, height = int((width*2.0)-2), int((height*4.0)-4)
+    game = GameOfLife(width=width, height=height)
     
     def fill_board_randomly(game):
         def set_cell_randomly():
