@@ -1,4 +1,5 @@
-/__pychache__
+__pycache__/
+man/
 /.idea
 /bin
 /lib
