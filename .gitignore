@@ -1,4 +1,5 @@
 __pycache__/
+*.py[cod]
 man/
 /.idea
 /bin
