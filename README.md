@@ -8,3 +8,6 @@ The rules for Conway's Game of Life are pretty simple:
 - Any live cell with two or three live neighbours lives on to the next generation.
 - Any live cell with more than three live neighbours dies, as if by overcrowding.
 - Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
+### This is how this looks like
+![](https://github.com/snebel29/game-of-life/blob/master/anim.gif)
